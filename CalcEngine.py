@@ -8,13 +8,13 @@ funcs = [
 ]
 
 def fact(n):
-    if n <= 1:
+    if (n <= 1):
         return 1
     return n * fact(n-1)
 
 def strToNum(num: str):
-    if num:
-        if '.' in num:
+    if (num):
+        if ('.' in num):
             return float(num)
         else:
             return int(num)
@@ -37,27 +37,27 @@ class TokenStream:
         self.stream = stream
 
     def get(self):
-        if self.full:
+        if (self.full):
             self.full = False
             return self.buffer
-        if not self.stream:
+        if (not self.stream):
             return Token('')
         sym = self.stream[0]
-        if sym in operators:
+        if (sym in operators):
             self.stream = self.stream[1:]
             return Token(sym)
-        if sym.isdigit() or sym == '.':
+        if (sym.isdigit() or sym == '.'):
             num = ''
             last = 0
-            while last < len(self.stream) and (self.stream[last].isdigit() or self.stream[last] == '.'):
+            while (last < len(self.stream) and (self.stream[last].isdigit() or self.stream[last] == '.')):
                     num += self.stream[last]
                     last += 1
             self.stream = self.stream[last:]
             return Token('number', value=strToNum(num))
-        if sym.isalpha():
+        if (sym.isalpha()):
             last = 0
             s = ''
-            while last < len(self.stream) and self.stream[last].isalpha():
+            while (last < len(self.stream) and self.stream[last].isalpha()):
                 s += self.stream[last]
                 last += 1
             if s in funcs:
@@ -84,9 +84,9 @@ class CalculatorLogic:
         left = self.term()
         while True:
             t = self.ts.get()
-            if t.kind == '+':
+            if (t.kind == '+'):
                 left += self.term()
-            elif t.kind == '-':
+            elif (t.kind == '-'):
                 left -= self.term()
             else:
                 self.ts.putBack(t)
@@ -96,11 +96,11 @@ class CalculatorLogic:
         left = self.third()
         while True:
             t = self.ts.get()
-            if t.kind == '*':
+            if (t.kind == '*'):
                 left *= self.third()
-            elif t.kind == '/':
+            elif (t.kind == '/'):
                 left /= self.third()
-            elif t.kind == '%':
+            elif (t.kind == '%'):
                 left %= self.third()
             else:
                 self.ts.putBack(t)
@@ -110,8 +110,8 @@ class CalculatorLogic:
         left = self.second()
         while True:
             t = self.ts.get()
-            if t.kind == '^':
-                if left < 0:
+            if (t.kind == '^'):
+                if (left < 0):
                     return
                 left = pow(left, self.second())
             else:
@@ -122,7 +122,7 @@ class CalculatorLogic:
         left = self.primary()
         t = self.ts.get()
         while True:
-            if t.kind == '!':
+            if (t.kind == '!'):
                 t = self.ts.get()
                 left = fact(left)
             else:
@@ -131,18 +131,18 @@ class CalculatorLogic:
 
     def primary(self):
         t = self.ts.get()
-        if t.kind == '(':
+        if (t.kind == '('):
             d = self.expression()
             t = self.ts.get()
             if (t.kind != ')'): return
             return d
-        elif t.kind == '-':
+        elif (t.kind == '-'):
             return -self.primary()
-        elif t.kind == '+':
+        elif (t.kind == '+'):
             return self.primary()
-        elif t.kind == 'number':
+        elif (t.kind == 'number'):
             return t.value
-        elif t.kind == 'function':
+        elif (t.kind == 'function'):
             func = t.func
             t = self.ts.get()
             if (t.kind != '('): return

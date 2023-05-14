@@ -16,9 +16,15 @@ class CalculatorModel:
     def inputDigits(self, digit: str):
         if (self.computed):
             self.computed = ''
-        if digit == '.':
-            if '.' in self.enteredDigits:
+
+        if (self.enteredDigits == '0'):
+            self.enteredDigits = digit
+            return
+
+        if (digit == '.'):
+            if ('.' in self.enteredDigits):
                 return
+
         self.enteredDigits += digit
         self.update()
 
