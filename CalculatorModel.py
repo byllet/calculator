@@ -1,12 +1,11 @@
-from CalcEngine import CalculatorLogic
-from CalcEngine import operators
-from CalcEngine import funcs
+from CalculatorEngine import CalculatorLogic
+from CalculatorEngine import operators
+from CalculatorEngine import funcs
 
 class CalculatorModel:
     def __init__(self):
         self.calc = CalculatorLogic()
         self.curState = []
-        self.op = ''
         self.computed = ''
         self.line = ''
         self.lable = ''
@@ -19,6 +18,7 @@ class CalculatorModel:
 
         if (self.enteredDigits == '0'):
             self.enteredDigits = digit
+            self.update()
             return
 
         if (digit == '.'):
@@ -82,7 +82,7 @@ class CalculatorModel:
         self.curState.append(br)
         self.update()
 
-    def tryDoFunc(self, func):
+    def tryAddFunc(self, func):
         if (self.computed):
             if (not self.enteredDigits):
                 self.curState = [self.computed]
@@ -119,8 +119,8 @@ class CalculatorModel:
             while (ind > 0 and self.curState[ind - 2] in funcs):
                 ind -= 2
 
-            wtf = ''.join(self.curState[ind: i + (i - ind)//2 + 1])
-            self.line = self.calc.calculate(wtf)
+            computedLine = ''.join(self.curState[ind: i + (i - ind)//2 + 1])
+            self.line = self.calc.calculate(computedLine)
             self.computeLable()
 
     def compute(self):
@@ -145,7 +145,7 @@ class CalculatorModel:
         elif (not self.curState):
             self.lable = ''
 
-    def check(self):
+    def check(self) -> bool:
         if (self.bracketCount[0] > self.bracketCount[1]):
             self.curState.append(')')
             self.bracketCount[1] += 1
@@ -173,13 +173,11 @@ class CalculatorModel:
                     for j in range(i, len(self.curState)):
                         if (self.curState[j] == '('):
                             count += 1
-
                         if (self.curState[j] == ')'):
                             count -= 1
                             if (count == 0):
                                 ind = j
                                 break
-
                     if (ind):
                         temp = self.curState
                         self.curState = temp[i + 1: ind + 1]
@@ -187,20 +185,12 @@ class CalculatorModel:
                             v = self.calc.calculate(self.getStr())
                             self.curState = temp
                             if (v == '0'):
-                                self.curState = []
-                                self.computed = ''
-                                self.enteredDigits = ''
-                                self.line = 'div by zero'
-                                self.computeLable()
+                                self.putErrorToLineEdit('div by zero')
                                 return False
                         self.curState = temp
 
                 elif (i + 1 < len(self.curState) and self.curState[i + 1] == '0'):
-                    self.curState = []
-                    self.computed = ''
-                    self.enteredDigits = ''
-                    self.line = 'div by zero'
-                    self.computeLable()
+                    self.putErrorToLineEdit('div by zero')
                     return False
 
             if (self.curState[i] == 'sqrt'):
@@ -223,19 +213,22 @@ class CalculatorModel:
                         v = self.calc.calculate(self.getStr())
                         self.curState = temp
                         if (v < '0'):
-                            self.curState = []
-                            self.computed = ''
-                            self.enteredDigits = ''
-                            self.line = 'below zero'
-                            self.computeLable()
+                            self.putErrorToLineEdit('below zero')
                             return False
                     self.curState = temp
 
             if (self.curState[i] == ')'):
                 if (i + 1 < len(self.curState) and self.curState[i+1][-1].isdigit()):
                     self.curState.insert(i + 1, '+')
-
         return True
+
+    def putErrorToLineEdit(self, error: str):
+        self.curState = []
+        self.computed = ''
+        self.enteredDigits = ''
+        self.line = error
+        self.computeLable()
+
 
     def getStr(self) -> str:
         return ''.join(self.curState)
@@ -244,10 +237,10 @@ class CalculatorModel:
         self.line = self.enteredDigits
         self.computeLable()
 
-    def getLineEdit(self):
+    def getLineEdit(self) -> str:
         return self.line
 
-    def getLable(self):
+    def getLable(self) -> str:
         return self.lable
 
     def clearAll(self):

@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui
-from CalcUI import Ui_MainWindow
-from CalcModel import CalculatorModel
+from CalculatorUI import Ui_MainWindow
+from CalculatorModel import CalculatorModel
 
 class Calculator(QtWidgets.QMainWindow):
     def __init__(self):
@@ -69,7 +69,7 @@ class Calculator(QtWidgets.QMainWindow):
         self.update()
 
     def inputFunc(self, func):
-        self.calculatorModel.tryDoFunc(func)
+        self.calculatorModel.tryAddFunc(func)
         self.update()
 
     def clearAll(self):

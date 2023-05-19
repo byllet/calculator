@@ -3,9 +3,7 @@ operators = [
     '/', '%', ';', '!', '^'
 ]
 
-funcs = [
-    'sqrt', 'sqr', 'inv', 'fact'
-]
+funcs = ['sqrt', 'sqr', 'inv', 'fact']
 
 def fact(n):
     if (n <= 1):
@@ -158,22 +156,3 @@ class CalculatorLogic:
                 return d**2
             elif (func == 'inv'):
                 return -d
-
-class SmallParcer:
-    def parce(self, string: str):
-        res = []
-        ts = TokenStream(string)
-        while True:
-            t = ts.get()
-            if (t.kind == ''): break
-            elif (t.kind == 'number'):
-                res.append(str(t.value))
-            elif (t.kind in operators):
-                res.append(t.kind)
-            elif (t.kind == 'function'):
-                res.append(t.func)
-        return res
-
-if __name__ == "__main__":
-    c = CalculatorLogic()
-    print(c.calculate('-1'))
